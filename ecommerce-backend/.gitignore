@@ -117,4 +117,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Ignore uploads folder
+uploads/
+
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
