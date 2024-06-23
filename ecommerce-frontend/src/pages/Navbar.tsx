@@ -7,14 +7,20 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <div className="flex items-center justify-around h-38 relatve ">
+    <div className="flex items-center justify-around h-38 relatve max-w-full ">
       <div className="flex relative space-x-8">
+        <Link to={"/"}>
+          <button className=""> HOME</button>
+        </Link>
         <Link to={"/product-listing"}>
           <button className=""> SHOP</button>
         </Link>
-
-        <button className="">OUR STORY</button>
-        <button className="">CONTACT</button>
+        <Link to={"/blog-listing"}>
+          <button className=""> BLOG</button>
+        </Link>
+        <Link to={"/contact-listing"}>
+          <button className=""> CONTACT</button>
+        </Link>
       </div>
       <div className="size-36">
         <Link to="/">
@@ -42,12 +48,16 @@ function Navbar() {
             </IconButton>
           </Paper>
         </div>
-        <button>
-          <FaUserCircle size={25} />
-        </button>
-        <button>
-          <GiShoppingBag size={35} />
-        </button>
+        <Link to={"/sign-in"}>
+          <button>
+            <FaUserCircle size={25} />
+          </button>
+        </Link>
+        <Link to={"/shopping-cart"}>
+          <button>
+            <GiShoppingBag size={35} />
+          </button>
+        </Link>
       </div>
     </div>
   );

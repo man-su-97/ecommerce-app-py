@@ -1,23 +1,3 @@
-// function ProductLayout() {
-//   return <div>ProductLayout</div>;
-// }
-
-// export default ProductLayout;
-
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 import { Fragment, useState } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -28,7 +8,6 @@ import {
   PlusIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
-import Product from "../pages/ProductCard";
 import ProductList from "../pages/ProductCard";
 
 const sortOptions = [

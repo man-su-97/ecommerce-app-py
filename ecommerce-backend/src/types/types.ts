@@ -38,6 +38,10 @@ export interface INewProductRequestBody {
   price: number;
   stock: number;
 }
+export interface INewCouponRequestBody {
+  coupon: string;
+  amount: number;
+}
 
 export type InvalidateCacheProps = {
   product?: boolean;

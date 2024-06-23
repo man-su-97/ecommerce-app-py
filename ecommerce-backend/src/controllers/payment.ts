@@ -1,6 +1,8 @@
+import { Request } from "express";
 import { razorpay } from "../app.js";
 import { TryCatch } from "../middlewares/error.js";
 import { Coupon } from "../models/coupon.js";
+import { INewCouponRequestBody } from "../types/types.js";
 import ErrorHandler from "../utils/utility-class.js";
 
 export const createPaymentIntent = TryCatch(async (req, res, next) => {
@@ -24,19 +26,21 @@ export const createPaymentIntent = TryCatch(async (req, res, next) => {
   });
 });
 
-export const newCoupon = TryCatch(async (req, res, next) => {
-  const { coupon, amount } = req.body;
+export const newCoupon = TryCatch(
+  async (req: Request<{}, {}, INewCouponRequestBody>, res, next) => {
+    const { coupon, amount } = req.body;
 
-  if (!coupon || !amount)
-    return next(new ErrorHandler("Please enter both coupon and amount", 400));
+    if (!coupon || !amount)
+      return next(new ErrorHandler("Please enter both coupon and amount", 400));
 
-  await Coupon.create({ code: coupon, amount });
+    await Coupon.create({ code: coupon.toLowerCase(), amount });
 
-  return res.status(201).json({
-    success: true,
-    message: `Coupon ${coupon} Created Successfully`,
-  });
-});
+    return res.status(201).json({
+      success: true,
+      message: `Coupon ${coupon} Created Successfully`,
+    });
+  }
+);
 
 export const applyDiscount = TryCatch(async (req, res, next) => {
   const { coupon } = req.query;
