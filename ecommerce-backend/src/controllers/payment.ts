@@ -4,6 +4,9 @@ import { TryCatch } from "../middlewares/error.js";
 import { Coupon } from "../models/coupon.js";
 import { INewCouponRequestBody } from "../types/types.js";
 import ErrorHandler from "../utils/utility-class.js";
+import crypto from "crypto";
+import { invalidateCache, reduceStock } from "../utils/feature.js";
+import { Order } from "../models/order.js";
 
 export const createPaymentIntent = TryCatch(async (req, res, next) => {
   const { amount } = req.body;
@@ -23,6 +26,7 @@ export const createPaymentIntent = TryCatch(async (req, res, next) => {
     success: true,
     orderId: order.id,
     razorpayKey: process.env.RAZORPAY_KEY_ID,
+    clientSecret: order.id,
   });
 });
 
@@ -64,6 +68,26 @@ export const allCoupons = TryCatch(async (req, res, next) => {
   });
 });
 
+export const updateCoupon = TryCatch(async (req, res, next) => {
+  const { id } = req.params;
+
+  const { code, amount } = req.body;
+
+  const coupon = await Coupon.findById(id);
+
+  if (!coupon) return next(new ErrorHandler("Invalid Coupon ID", 400));
+
+  if (code) coupon.code = code;
+  if (amount) coupon.amount = amount;
+
+  await coupon.save();
+
+  return res.status(200).json({
+    success: true,
+    message: `Coupon ${coupon.code} Updated Successfully`,
+  });
+});
+
 export const deleteCoupon = TryCatch(async (req, res, next) => {
   const { id } = req.params;
 
@@ -74,5 +98,18 @@ export const deleteCoupon = TryCatch(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: `Coupon ${coupon.code} Deleted Successfully`,
+  });
+});
+
+export const getCoupon = TryCatch(async (req, res, next) => {
+  const { id } = req.params;
+
+  const coupon = await Coupon.findById(id);
+
+  if (!coupon) return next(new ErrorHandler("Invalid Coupon ID", 400));
+
+  return res.status(200).json({
+    success: true,
+    coupon,
   });
 });

@@ -3,114 +3,49 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { useRef } from "react";
-import { Button } from "@mui/material";
-
-const products = [
-  {
-    id: 1,
-    name: "Earthen Bottle",
-    href: "#",
-    price: "$48",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-    imageAlt:
-      "Tall slender porcelain bottle with natural clay textured body and cork stopper.",
-  },
-  {
-    id: 2,
-    name: "Nomad Tumbler",
-    href: "#",
-    price: "$35",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-    imageAlt:
-      "Olive drab green insulated bottle with flared screw lid and flat top.",
-  },
-  {
-    id: 3,
-    name: "Focus Paper Refill",
-    href: "#",
-    price: "$89",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-  {
-    id: 4,
-    name: "Machined Mechanical Pencil",
-    href: "#",
-    price: "$35",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg",
-    imageAlt:
-      "Hand holding black machined steel mechanical pencil with brass tip and top.",
-  },
-  {
-    id: 5,
-    name: "Earthen Bottle",
-    href: "#",
-    price: "$48",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-    imageAlt:
-      "Tall slender porcelain bottle with natural clay textured body and cork stopper.",
-  },
-  {
-    id: 6,
-    name: "Nomad Tumbler",
-    href: "#",
-    price: "$35",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-    imageAlt:
-      "Olive drab green insulated bottle with flared screw lid and flat top.",
-  },
-  {
-    id: 7,
-    name: "Focus Paper Refill",
-    href: "#",
-    price: "$89",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-  {
-    id: 8,
-    name: "Machined Mechanical Pencil",
-    href: "#",
-    price: "$35",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg",
-    imageAlt:
-      "Hand holding black machined steel mechanical pencil with brass tip and top.",
-  },
-  // More products...
-];
+import { useLatestProductsQuery } from "../redux/api/productAPI";
+import SwiperCore from "swiper";
+import { transformImage } from "../utils/features";
+import { addToCart } from "../redux/reducers/cartReducer";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { CartItem } from "../types/types";
 
 const ProductSlider = () => {
-  const swiperRef = useRef(null);
+  const swiperRef = useRef<SwiperCore | null>(null);
+  const { data: latestProducts } = useLatestProductsQuery("");
 
   const slideNext = () => {
-    if (swiperRef.current && swiperRef.current.swiper) {
-      swiperRef.current.swiper.slideNext();
+    if (swiperRef.current) {
+      swiperRef.current.slideNext();
     }
   };
 
   const slidePrev = () => {
-    if (swiperRef.current && swiperRef.current.swiper) {
-      swiperRef.current.swiper.slidePrev();
+    if (swiperRef.current) {
+      swiperRef.current.slidePrev();
     }
   };
+  const dispatch = useDispatch();
+
+  const addToCartHandler = (cartItem: CartItem) => {
+    if (cartItem.stock < 1) return toast.error("Out of Stock");
+
+    dispatch(addToCart(cartItem));
+    toast.success("Added to cart");
+  };
+  const quantity = 1;
+
+  console.log("slider- ", latestProducts);
 
   return (
     <div className="text-center relative">
       <h1 className="text-5xl font-light mb-36">MOST POPULAR</h1>
-      <h1 className="text-3xl font-light left-2 oy-2">All Products</h1>
       <div className="relative px-20">
         <Swiper
-          ref={swiperRef}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
           spaceBetween={20}
           slidesPerView={1}
           pagination={{ clickable: true }}
@@ -131,30 +66,36 @@ const ProductSlider = () => {
           }}
           className="mySwiper"
         >
-          {products.map((product) => (
-            <SwiperSlide key={product.id}>
-              <a href={product.href} className=" block group">
+          {latestProducts?.products.map((product) => (
+            <SwiperSlide key={product._id}>
+              <a href={""} className="block group">
                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg">
                   <img
-                    src={product.imageSrc}
-                    alt={product.imageAlt}
-                    className="object-cover object-center "
+                    src={transformImage(product.photos[0]?.url, 400)}
+                    alt={product.name}
+                    className="object-cover object-center"
                   />
                 </div>
                 <h3 className="mt-2 text-sm text-gray-700">{product.name}</h3>
                 <p className="mt-1 text-md font-medium text-gray-900">
+                  <span>&#8377;</span>
                   {product.price}
                 </p>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: "400px",
-                    borderColor: "black ",
-                    color: "black",
-                  }}
+                <button
+                  onClick={() =>
+                    addToCartHandler({
+                      productId: product._id,
+                      name: product.name,
+                      price: product.price,
+                      stock: product.stock,
+                      quantity,
+                      photo: product.photos[0]?.url || "",
+                    })
+                  }
+                  className="bg-[#5E5E4A] w-full text-white rounded-sm h-10"
                 >
                   Add to Cart
-                </Button>
+                </button>
               </a>
             </SwiperSlide>
           ))}
@@ -162,7 +103,7 @@ const ProductSlider = () => {
         <div className="absolute top-1/2 transform -translate-y-1/2 left-4 z-50">
           <button
             onClick={slidePrev}
-            className="bg-gray-800 text-white p-2 rounded-full focus:outline-none"
+            className="bg-gray-800 text-white p-2 rounded-full focus:outline-none "
           >
             &lt;
           </button>

@@ -8,12 +8,18 @@ import { Link } from "react-router-dom";
 function HomeLayout() {
   return (
     <div className="max-w-full overflow-x-hidden">
-      <section className="w-screen h-[719px] overflow-hidden">
+      <section className="w-screen h-[719px] relative overflow-hidden">
         <img
           src={banner}
           alt="banner"
           className="w-full object-cover object-center"
         />
+        <div className="absolute inset-24 flex items-center  top-1/6 ">
+          <h1 className="text-white text-5xl md:text-7xl font-bold">
+            Your Pleasure, Perfectly
+            <br /> Priced.
+          </h1>
+        </div>
       </section>
 
       <div className="flex justify-center max-w-full">
@@ -21,7 +27,7 @@ function HomeLayout() {
       </div>
 
       <div className="px-10 lg:px-40 flex flex-col lg:flex-row max-w-full">
-        <div className="px-0 lg:px-14 py-14 flex-1">
+        <div className="px-0 lg:px-40 py-14 flex-1">
           <p className="text-justify overflow-hidden">
             We are the first Indian brand specializing in personalized women and
             LGBTQI+ intimate products, dedicated to revolutionizing your
@@ -42,7 +48,7 @@ function HomeLayout() {
         <img
           src={storyimg1}
           alt="story-img-1"
-          className="h-auto w-full lg:w-1/2"
+          className="h-auto w-full lg:w-1/2 lg:h-2/3"
         />
       </div>
       <div className="bg-[#DCB4BC] pt-48 my-40 pb-20 w-screen">

@@ -1,11 +1,32 @@
 import logo from "../assets/py.png";
 import { GiShoppingBag } from "react-icons/gi";
-import { FaUserCircle } from "react-icons/fa";
 import { IconButton, InputBase, Paper } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Link } from "react-router-dom";
+import { User } from "../types/types";
+import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
+import { auth } from "../firebase";
+import { FaSignInAlt, FaSignOutAlt, FaUser } from "react-icons/fa";
+import { useState } from "react";
+import "../styles/navbar.css";
 
-function Navbar() {
+interface PropsType {
+  user: User | null;
+}
+
+function Navbar({ user }: PropsType) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const logoutHandler = async () => {
+    try {
+      await signOut(auth);
+      toast.success("Sign Out Successfully");
+      setIsOpen(false);
+    } catch (error) {
+      toast.error("Sign Out Fail");
+    }
+  };
   return (
     <div className="flex items-center justify-around h-38 relatve max-w-full ">
       <div className="flex relative space-x-8">
@@ -48,12 +69,34 @@ function Navbar() {
             </IconButton>
           </Paper>
         </div>
-        <Link to={"/sign-in"}>
-          <button>
-            <FaUserCircle size={25} />
-          </button>
-        </Link>
-        <Link to={"/shopping-cart"}>
+
+        {user?._id ? (
+          <nav className="header">
+            <button onClick={() => setIsOpen((prev: any) => !prev)}>
+              <FaUser />
+            </button>
+            <dialog open={isOpen} className="dialog">
+              <div>
+                {user.role === "admin" && (
+                  <Link onClick={() => setIsOpen(false)} to="/admin/dashboard">
+                    Admin
+                  </Link>
+                )}
+                <Link onClick={() => setIsOpen(false)} to="/orders">
+                  Orders
+                </Link>
+                <button onClick={logoutHandler}>
+                  <FaSignOutAlt />
+                </button>
+              </div>
+            </dialog>
+          </nav>
+        ) : (
+          <Link to={"/login"}>
+            <FaSignInAlt />
+          </Link>
+        )}
+        <Link to={"/cart"}>
           <button>
             <GiShoppingBag size={35} />
           </button>

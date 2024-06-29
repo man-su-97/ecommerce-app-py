@@ -37,6 +37,7 @@ export interface INewProductRequestBody {
   category: string;
   price: number;
   stock: number;
+  description: string;
 }
 export interface INewCouponRequestBody {
   coupon: string;
@@ -49,6 +50,7 @@ export type InvalidateCacheProps = {
   admin?: boolean;
   userId?: string;
   orderId?: string;
+  review?: boolean;
   productId?: string | string[];
 };
 

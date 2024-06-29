@@ -1,5 +1,3 @@
-// DeleteIcon.js
-
 function DeleteIcon() {
   return (
     <svg
